@@ -1,0 +1,40 @@
+name: Prevent Concurrent Runs
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  check-concurrency:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install GitHub CLI
+        run: |
+          sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-key C99B11DEB97541F0
+          sudo apt-add-repository https://cli.github.com/packages
+          sudo apt update
+          sudo apt install gh -y
+
+      - name: Check for running workflows
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Replace with your workflow file name or ID
+          WORKFLOW_FILE_NAME="prevent-concurrent.yml"
+
+          echo "Checking for running instances of $WORKFLOW_FILE_NAME..."
+          RUNNING=$(gh run list --workflow="$WORKFLOW_FILE_NAME" --status="in_progress" --json databaseId --jq 'length')
+          
+          echo "Found $RUNNING runs in progress"
+          
+          if [ "$RUNNING" -gt 0 ]; then
+            echo "Another run is in progress. Exiting."
+            exit 1
+          fi
+
+      - name: Run actual work
+        run: |
+          echo "Running the real stuff..."
