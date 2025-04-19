@@ -17,6 +17,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_PAT: ${{ secrets.REPO_PAT }}
         run: |
+          export GH_REPO=mohanpatrick/elim-data-2025
           # Replace with your workflow file name or ID
           WORKFLOW_FILE_NAME="prevent-concurrent.yml"
 
