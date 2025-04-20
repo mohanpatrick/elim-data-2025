@@ -2,6 +2,10 @@ on:
   schedule:
      - cron: "30 6,12 * * *"
   workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
   
 name: update_drafts_mfl
 
