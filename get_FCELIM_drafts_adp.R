@@ -107,8 +107,8 @@ fwrite(mfl_leagues,"mfl_league_ids.csv",quote = TRUE)
 
 # FOR TESTING
 
-mfl_leagues <- mfl_leagues |>
-  slice_sample(n=60)
+#mfl_leagues <- mfl_leagues |>
+ # slice_sample(n=60)
 
 cli::cli_alert("Starting draft pull")
 cli::cli_alert(now())
