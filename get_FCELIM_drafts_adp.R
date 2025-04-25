@@ -18,31 +18,47 @@ options(dplyr.summarise.inform = FALSE,
 #GITHUB_PAT <- Sys.setenv("GITHUB_PAT")
 #Sys.setenv(MFL_CLIENT = "")
 
-
-#GITHUB_PAT <- Sys.getenv(c("GITHUB_PAT"))
-mfl_client <- Sys.getenv(c("MFL_CLIENT"))
-mfl_user_id <- Sys.getenv(c("MFL_USER_ID"))
-mfl_pass <- Sys.getenv(c("MFL_PWD"))
-cli::cli_alert("Client ID: {mfl_client}")
-
 search_draft_year = "2024"
 find_leagues = "TRUE"
 polite = "FALSE"
 search_string="zzz #FCEliminator"
 total_picks_in_draft = 288
+user ="COMMISH"
 # Exclude blind bid leagues
 leagues_to_exclude = c(19123,33163,39863,52021,64792,58866,10144,15472,33121,42972,44072,57215,59150,65052,69507, 41474)
 leagues_to_exclude_adp = c(15099,28530,29122,29276,37484,45539,50996,69507,70181,70715)
+#GITHUB_PAT <- Sys.getenv(c("GITHUB_PAT"))
+mfl_client <- Sys.getenv(c("MFL_CLIENT"))
+mfl_user_id <- Sys.getenv(c("MFL_USER_ID"))
+mfl_pass <- Sys.getenv(c("MFL_PWD"))
+
+
+if ( user == "COMMISH") {
+  
+
+
+#GITHUB_PAT <- Sys.getenv(c("GITHUB_PAT"))
+mfl_client <- Sys.getenv(c("COMMISH_CLIENT"))
+mfl_user_id <- Sys.getenv(c("MFL_COMMISH_USER_ID"))
+mfl_pass <- Sys.getenv(c("MFL_COMMISH_PWD"))
+cli::cli_alert("Client ID: {mfl_client}")
+
+}
+
+
+
+
+
 # Hmmm, can we use the number of picks to filter out weird ones? Before we filter?
 
 
 pb_download("draft_picks_mfl.csv",
-          repo = "mohanpatrick/elim-data-2024",
+          repo = "mohanpatrick/elim-data-2025",
           tag = "data-mfl")
 cli::cli_alert_success("Successfully draft picks uploaded to Git")
 
 pb_upload("draft_picks_mfl.csv",
-            repo = "mohanpatrick/elim-data-2024",
+            repo = "mohanpatrick/elim-data-2025",
             tag = "data-archive")
 cli::cli_alert_success("Successfully uploaded last run to archive")
 
@@ -55,7 +71,7 @@ get_mfl_draft <- function(league_id){
   cli::cli_alert("League ID: {league_id}")
   cli::cli_alert("Now we sleep to not piss off MFL")
   Sys.sleep(3)
-  conn <- mfl_connect(search_draft_year, league_id, user_agent = "MFLRCLIENT", rate_limit = TRUE, rate_limit_number = 30, rate_limit_seconds = 60,user_name=mfl_user_id, password = mfl_pass)
+  conn <- mfl_connect(search_draft_year, league_id, user_agent = mfl_client, rate_limit = TRUE, rate_limit_number = 30, rate_limit_seconds = 60,user_name=mfl_user_id, password = mfl_pass)
   draft<- ff_draft(conn)
   if("timestamp" %in% names(draft)){
     return(draft)
@@ -68,7 +84,7 @@ get_mfl_draft <- function(league_id){
 }
 
 # This is what we'd use if we don't have to use userLeagues
-mfl_leagues <- mfl_getendpoint(mfl_connect(search_draft_year),"leagueSearch", user_agent="MFLRCLIENT", SEARCH=search_string, user_name=mfl_user_id, password = mfl_pass) |>
+mfl_leagues <- mfl_getendpoint(mfl_connect(search_draft_year),"leagueSearch", user_agent=mfl_client, SEARCH=search_string, user_name=mfl_user_id, password = mfl_pass) |>
   purrr::pluck("content","leagues","league") |>
   tibble::tibble() |>
   tidyr::unnest_wider(1) |>
@@ -107,8 +123,8 @@ fwrite(mfl_leagues,"mfl_league_ids.csv",quote = TRUE)
 
 # FOR TESTING
 
-#mfl_leagues <- mfl_leagues |>
- # slice_sample(n=60)
+mfl_leagues <- mfl_leagues |>
+  slice_sample(n=60)
 
 cli::cli_alert("Starting draft pull")
 cli::cli_alert(now())
@@ -355,7 +371,7 @@ write_csv(all_picks, "all_picks.csv")
 
   all_league_summary <- all_league_summary |>
     # left_join(draft_sum) |>
-    mutate(league_name = gsub("zzz #FCEliminator 2024","", league_name),
+    mutate(league_name = gsub("zzz #FCEliminator 2025","", league_name),
            league_home = str_replace(league_home, "https//", "https://"),
            last_pick_ts_est = with_tz(last_pick_made_ts, "America/New_York"),
            time_since = as.period(interval(last_pick_ts_est,now(tzone="America/New_York"))),
@@ -373,8 +389,5 @@ pb_upload("otc_file.csv",
           tag = "data-mfl")
 cli::cli_alert_success("Successfully uploaded adp metadata to Git")
 
-
-
-
-
-
+#mfl_conn <- mfl_connect(season = 2024, league_id = 43231, user_name = mfl_user_id, password = mfl_pass , user_agent = mfl_client)
+#draft <- get_mfl_draft(43231)
