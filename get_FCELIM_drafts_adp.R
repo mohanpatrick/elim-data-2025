@@ -23,7 +23,7 @@ find_leagues = "TRUE"
 polite = "FALSE"
 search_string="zzz #FCEliminator"
 total_picks_in_draft = 288
-user ="COMMISH"
+user ="MAIN"
 # Exclude blind bid leagues
 leagues_to_exclude = c(19123,33163,39863,52021,64792,58866,10144,15472,33121,42972,44072,57215,59150,65052,69507, 41474)
 leagues_to_exclude_adp = c(15099,28530,29122,29276,37484,45539,50996,69507,70181,70715)
