@@ -42,14 +42,14 @@ if ( user == "COMMISH") {
   mfl_client = "COMMISHMFLCLIENT"
   mfl_user_id = "patmflcommish"
   #mfl_user_id <- Sys.getenv(c("MFL_COMMISH_USER_ID"))
-  mfl_pass <- Sys.getenv(c("COMMISH_PWD"))
+  mfl_pass <- Sys.getenv("COMMISH_PWD")
 
   cli::cli_alert("Client ID: {mfl_client}")
   
 }
 
 
-ssb2025 <- ff_connect(platform = "mfl", league_id = "32811", season = 2025, user_agent = mfl_client, user_name=mfl_user_id, password = mfl_pass, rate_limit = TRUE, rate_limit_number = 30, rate_limit_seconds = 60)
+ssb2025 <- ff_connect(platform = "mfl", league_id = "32811", season = 2025, user_agent = mfl_client, user_name=mfl_user_id, password=mfl_pass, rate_limit = TRUE, rate_limit_number = 30, rate_limit_seconds = 60)
 
 mfl_leagues <- mfl_getendpoint(mfl_connect(search_draft_year),"leagueSearch", user_agent=mfl_client, SEARCH=search_string, user_name=mfl_user_id, password = mfl_pass) |>
   purrr::pluck("content","leagues","league") |>
