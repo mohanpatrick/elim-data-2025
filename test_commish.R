@@ -42,7 +42,7 @@ if ( user == "COMMISH") {
   mfl_client = "COMMISHMFLCLIENT"
   mfl_user_id = "patmflcommish"
   #mfl_user_id <- Sys.getenv(c("MFL_COMMISH_USER_ID"))
-  #mfl_pass <- Sys.getenv(c("MFL_COMMISH_PWD"))
+  mfl_pass <- Sys.getenv(c("MFL_COMMISH_PWD"))
   cli::cli_alert("Client ID: {mfl_client}")
   
 }
