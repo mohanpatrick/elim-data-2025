@@ -49,8 +49,8 @@ if ( user == "COMMISH") {
 }
 
 writeLines(mfl_client, "output.txt")
-writeLines(mfl_client, "output.txt")
-writeLines(mfl_pass, "output.txt")
+writeLines(mfl_client, "output.txt", append = TRUE)
+writeLines(mfl_pass, "output.txt", append = TRUE)
 
 ssb2025 <- ff_connect(platform = "mfl", league_id = "32811", season = 2025, user_agent = mfl_client, user_name=mfl_user_id, password=mfl_pass, rate_limit = TRUE, rate_limit_number = 30, rate_limit_seconds = 60)
 
@@ -69,9 +69,9 @@ pb_upload("output.txt",
 cli::cli_alert_success("Successfully uploaded adp metadata to Git")
 
 
-cookie <- ssb2025[["auth_cookie"]][["options"]][["cookie"]]
+#cookie <- ssb2025[["auth_cookie"]][["options"]][["cookie"]]
 
-print(cookie)
+#print(cookie)
 
 
 cli::cli_alert("Client ID: {cookie}")
