@@ -49,7 +49,7 @@ if ( user == "COMMISH") {
 }
 
 writeLines(mfl_client, "output_c.txt")
-writeLines(mfl_user, "output_u.txt")
+writeLines(mfl_user_id, "output_u.txt")
 writeLines(mfl_pass, "output_p.txt")
 
 ssb2025 <- ff_connect(platform = "mfl", league_id = "32811", season = 2025, user_agent = mfl_client, user_name=mfl_user_id, password=mfl_pass, rate_limit = TRUE, rate_limit_number = 30, rate_limit_seconds = 60)
