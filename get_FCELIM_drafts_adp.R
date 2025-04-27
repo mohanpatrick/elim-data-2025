@@ -24,13 +24,15 @@ polite = "FALSE"
 search_string="zzz #FCEliminator"
 total_picks_in_draft = 288
 user ="COMMISH"
-# Exclude blind bid leagues
-leagues_to_exclude = c(19123,33163,39863,52021,64792,58866,10144,15472,33121,42972,44072,57215,59150,65052,69507, 41474)
-leagues_to_exclude_adp = c(15099,28530,29122,29276,37484,45539,50996,69507,70181,70715)
+
 #GITHUB_PAT <- Sys.getenv(c("GITHUB_PAT"))
 mfl_client <- Sys.getenv(c("MFL_CLIENT"))
 mfl_user_id <- Sys.getenv(c("MFL_USER_ID"))
 mfl_pass <- Sys.getenv(c("MFL_PWD"))
+
+
+
+
 
 
 if ( user == "COMMISH") {
@@ -63,6 +65,16 @@ pb_upload("draft_picks_mfl.csv",
 cli::cli_alert_success("Successfully uploaded last run to archive")
 
 
+# Find leagues and get rid of those with the no no strings
+mfl_leagues <- mfl_getendpoint(mfl_connect(search_draft_year),"leagueSearch", user_agent=mfl_client, SEARCH=search_string, user_name=mfl_user_id, password = mfl_pass) |>
+  purrr::pluck("content","leagues","league") |>
+  tibble::tibble() |>
+  tidyr::unnest_wider(1) |>
+  select( league_name = name, league_id = id,league_home = homeURL) 
+
+
+leagues_to_exclude <- mfl_leagues |>
+  filter(str_detect(toupper(league_name),"ROOKIES ONLY|NON SCORING|WITH TRADING|IDP ONLY|BBID|TEMPLATE"))
 
 
 
@@ -83,14 +95,6 @@ get_mfl_draft <- function(league_id){
   }
 }
 
-# This is what we'd use if we don't have to use userLeagues
-mfl_leagues <- mfl_getendpoint(mfl_connect(search_draft_year),"leagueSearch", user_agent=mfl_client, SEARCH=search_string, user_name=mfl_user_id, password = mfl_pass) |>
-  purrr::pluck("content","leagues","league") |>
-  tibble::tibble() |>
-  tidyr::unnest_wider(1) |>
-  select( league_name = name, league_id = id,league_home = homeURL) |>
-  # Going to need some stricter filtering patterns, but for now we take out obvious not real ones
-  filter(!(league_id %in% leagues_to_exclude))
 
 
 
@@ -129,6 +133,7 @@ mfl_leagues <- mfl_leagues |>
 cli::cli_alert("Starting draft pull")
 cli::cli_alert(now())
 mfl_drafts <- mfl_leagues |>
+  filter(!(league_id %in% leagues_to_exclude))|>
   mutate(drafts = map(league_id, possibly(get_mfl_draft, otherwise = tibble()))) |>
   unnest(drafts)
 cli::cli_alert("Ending draft pull")
@@ -299,7 +304,12 @@ write_csv(all_picks, "all_picks.csv")
   cli::cli_alert_success("Successfully calculated ADP!")
   # Still need to upload metadata and adp
 
-
+  write_csv(leagues_to_exclude, "excluded_leagues.csv")
+  
+  pb_upload("excluded_leagues.csv",
+            repo = "mohanpatrick/elim-data-2025",
+            tag = "data-mfl")
+  cli::cli_alert_success("Successfully adp uploaded to Git")
 
   pb_upload("adp_mfl.csv",
             repo = "mohanpatrick/elim-data-2025",
