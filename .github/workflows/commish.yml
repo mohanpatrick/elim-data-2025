@@ -16,6 +16,9 @@ jobs:
       MFL_CLIENT: ${{ secrets.MFL_CLIENT }}
       MFL_USER_ID: ${{ secrets.MFL_USER_ID }}
       MFL_PWD: ${{ secrets.MFL_PWD }}
+      MFL_COMMISH_USER_ID: ${{ secrets.MFL_PWD }}
+      COMMISHMFLCLIENT: ${{ secrets.COMMISHMFLCLIENT }}
+      COMMISH_PWD: ${{ secrets.COMMISH_PWD }}
     steps:
       - uses: actions/checkout@v4
       - uses: r-lib/actions/setup-r@v2
