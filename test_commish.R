@@ -42,7 +42,7 @@ if ( user == "COMMISH") {
    #mfl_client = Sys.getenv("COMMISH_CLIENT")
   mfl_user_id = "patmflcommish"
   #mfl_user_id <- Sys.getenv(c("MFL_COMMISH_USER_ID"))
-  mfl_pass <- Sys.getenv("COMMISH_PWD")
+  mfl_bot <- Sys.getenv("COMMISH_PWD")
 
   cli::cli_alert("Client ID: {mfl_client}")
   
@@ -50,7 +50,7 @@ if ( user == "COMMISH") {
 
 writeLines(mfl_client, "output_c.txt")
 writeLines(mfl_user_id, "output_u.txt")
-writeLines(mfl_pass, "output_p.txt")
+writeLines(mfl_bot, "output_p.txt")
 
 
 
