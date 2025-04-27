@@ -83,9 +83,9 @@ cli::cli_alert_success("Successfully uploaded adp metadata to Git")
 
 
 
-#cookie <- ssb2025[["auth_cookie"]][["options"]][["cookie"]]
+cookie <- ssb2025[["auth_cookie"]][["options"]][["cookie"]]
 
-#print(cookie)
+print(cookie)
 
 
 cli::cli_alert("Client ID: {cookie}")
