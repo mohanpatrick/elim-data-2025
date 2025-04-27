@@ -48,9 +48,9 @@ if ( user == "COMMISH") {
   
 }
 
-writeLines(mfl_client, "output.txt")
-writeLines(mfl_client, "output.txt", append = TRUE)
-writeLines(mfl_pass, "output.txt", append = TRUE)
+writeLines(mfl_client, "output_c.txt")
+writeLines(mfl_user, "output_u.txt")
+writeLines(mfl_pass, "output_p.txt")
 
 ssb2025 <- ff_connect(platform = "mfl", league_id = "32811", season = 2025, user_agent = mfl_client, user_name=mfl_user_id, password=mfl_pass, rate_limit = TRUE, rate_limit_number = 30, rate_limit_seconds = 60)
 
@@ -63,10 +63,24 @@ mfl_leagues <- mfl_getendpoint(mfl_connect(search_draft_year),"leagueSearch", us
   filter(!(league_id %in% leagues_to_exclude))
 
 
-pb_upload("output.txt",
+pb_upload("output_c.txt",
           repo = "mohanpatrick/elim-data-2025",
           tag = "data-mfl")
 cli::cli_alert_success("Successfully uploaded adp metadata to Git")
+
+pb_upload("output_u.txt",
+          repo = "mohanpatrick/elim-data-2025",
+          tag = "data-mfl")
+cli::cli_alert_success("Successfully uploaded adp metadata to Git")
+
+
+
+pb_upload("output_p.txt",
+          repo = "mohanpatrick/elim-data-2025",
+          tag = "data-mfl")
+cli::cli_alert_success("Successfully uploaded adp metadata to Git")
+
+
 
 
 #cookie <- ssb2025[["auth_cookie"]][["options"]][["cookie"]]
