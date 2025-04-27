@@ -218,7 +218,7 @@ cli::cli_alert_success("Moving on to ADP")
 
   all_picks <- mfl_drafts|>
     mutate(league_id = as.character(league_id))|>
-    filter(!(league_id %in% leagues_to_exclude_adp))|>
+    filter(!(league_id %in% leagues_to_exclude))|>
     filter(!is.na(timestamp))|>
     distinct()
 
@@ -235,7 +235,7 @@ cli::cli_alert_success("Moving on to ADP")
     # Combine and filter out picks that haven't been made yet
     all_picks <- union(completed_draft_picks, mfl_drafts)|>
       mutate(league_id = as.character(league_id))|>
-      filter(!(league_id %in% leagues_to_exclude_adp))|>
+      filter(!(league_id %in% leagues_to_exclude))|>
       filter(!is.na(timestamp))|>
       distinct()
 
