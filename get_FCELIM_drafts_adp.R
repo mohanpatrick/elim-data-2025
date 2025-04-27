@@ -74,7 +74,7 @@ mfl_leagues <- mfl_getendpoint(mfl_connect(search_draft_year),"leagueSearch", us
 
 
 leagues_to_exclude <- mfl_leagues |>
-  filter(str_detect(toupper(league_name),"ROOKIES ONLY|NON SCORING|WITH TRADING|IDP ONLY|BBID|TEMPLATE"))
+  filter(str_detect(toupper(league_name),"ROOKIES ONLY|NON SCORING|WITH TRADING|IDP ONLY|BBID|TEMPLATE|RBS ONLY"))
 
 
 
