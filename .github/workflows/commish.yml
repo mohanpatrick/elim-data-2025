@@ -16,7 +16,7 @@ jobs:
       MFL_CLIENT: ${{ secrets.MFL_CLIENT }}
       MFL_USER_ID: ${{ secrets.MFL_USER_ID }}
       MFL_PWD: ${{ secrets.MFL_PWD }}
-      MFL_COMMISH_USER_ID: ${{ secrets.MFL_PWD }}
+      MFL_COMMISH_USER_ID: ${{ secrets.MFL_COMMISH_USER_ID }}
       COMMISHMFLCLIENT: ${{ secrets.COMMISHMFLCLIENT }}
       COMMISH_PWD: ${{ secrets.COMMISH_PWD }}
     steps:
