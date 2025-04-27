@@ -30,7 +30,7 @@ leagues_to_exclude_adp = c(15099,28530,29122,29276,37484,45539,50996,69507,70181
 #GITHUB_PAT <- Sys.getenv(c("GITHUB_PAT"))
 mfl_client <- Sys.getenv(c("MFL_CLIENT"))
 mfl_user_id <- Sys.getenv(c("MFL_USER_ID"))
-mfl_pass <- Sys.getenv(c("MFL_PWD"))
+mfl_pass <- Sys.getenv(c("COMMISH_PWD"))
 
 
 if ( user == "COMMISH") {
