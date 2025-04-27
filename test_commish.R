@@ -52,15 +52,7 @@ writeLines(mfl_client, "output_c.txt")
 writeLines(mfl_user_id, "output_u.txt")
 writeLines(mfl_pass, "output_p.txt")
 
-ssb2025 <- ff_connect(platform = "mfl", league_id = "32811", season = 2025, user_agent = mfl_client, user_name=mfl_user_id, password=mfl_pass, rate_limit = TRUE, rate_limit_number = 30, rate_limit_seconds = 60)
 
-mfl_leagues <- mfl_getendpoint(mfl_connect(search_draft_year),"leagueSearch", user_agent=mfl_client, SEARCH=search_string, user_name=mfl_user_id, password = mfl_pass) |>
-  purrr::pluck("content","leagues","league") |>
-  tibble::tibble() |>
-  tidyr::unnest_wider(1) |>
-  select( league_name = name, league_id = id,league_home = homeURL) |>
-  # Going to need some stricter filtering patterns, but for now we take out obvious not real ones
-  filter(!(league_id %in% leagues_to_exclude))
 
 
 pb_upload("output_c.txt",
@@ -88,4 +80,4 @@ cli::cli_alert_success("Successfully uploaded adp metadata to Git")
 #print(cookie)
 
 
-cli::cli_alert("Client ID: {cookie}")
+#cli::cli_alert("Client ID: {cookie}")
