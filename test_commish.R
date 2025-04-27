@@ -38,8 +38,8 @@ if ( user == "COMMISH") {
   
   
   #GITHUB_PAT <- Sys.getenv(c("GITHUB_PAT"))
-  #mfl_client <- Sys.getenv(c("COMMISH_CLIENT"))
-   mfl_client = Sys.getenv("COMMISH_CLIENT")
+  mfl_client <- Sys.getenv(c("COMMISH_CLIENT"))
+   #mfl_client = Sys.getenv("COMMISH_CLIENT")
   mfl_user_id = "patmflcommish"
   #mfl_user_id <- Sys.getenv(c("MFL_COMMISH_USER_ID"))
   mfl_pass <- Sys.getenv("COMMISH_PWD")
