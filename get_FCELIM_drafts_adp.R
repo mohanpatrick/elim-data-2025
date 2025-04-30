@@ -18,7 +18,7 @@ options(dplyr.summarise.inform = FALSE,
 #GITHUB_PAT <- Sys.setenv("GITHUB_PAT")
 #Sys.setenv(MFL_CLIENT = "")
 
-search_draft_year = "2024"
+search_draft_year = "2025"
 find_leagues = "TRUE"
 polite = "FALSE"
 search_string="zzz #FCEliminator"
@@ -74,7 +74,9 @@ mfl_leagues <- mfl_getendpoint(mfl_connect(search_draft_year),"leagueSearch", us
 
 
 leagues_to_exclude <- mfl_leagues |>
-  filter(str_detect(toupper(league_name),"ROOKIES ONLY|NON SCORING|WITH TRADING|IDP ONLY|BBID|TEMPLATE|RBS ONLY"))
+  filter(str_detect(toupper(league_name),"ROOKIES ONLY|NON SCORING|WITH TRADING|IDP ONLY|BBID|TEMPLATE|RBS ONLY"))|>
+
+  leagues_ids_to_exclude <- pull(leagues_to_exclude, league_id)
 
 
 
@@ -88,11 +90,12 @@ get_mfl_draft <- function(league_id){
   if("timestamp" %in% names(draft)){
     return(draft)
 
-  } else {
+  } 
+  #else {
 
-    cli::cli_alert_success("{league_id} returns nothing")
-    return(NULL)
-  }
+ #   cli::cli_alert_success("{league_id} returns nothing")
+ #   return(NULL)
+ # }
 }
 
 
@@ -127,13 +130,12 @@ fwrite(mfl_leagues,"mfl_league_ids.csv",quote = TRUE)
 
 # FOR TESTING
 
-mfl_leagues <- mfl_leagues |>
-  slice_sample(n=65)
+#mfl_leagues <- mfl_leagues |>
+ # slice_sample(n=15)
 
 cli::cli_alert("Starting draft pull")
 cli::cli_alert(now())
 mfl_drafts <- mfl_leagues |>
-  filter(!(league_id %in% leagues_to_exclude))|>
   mutate(drafts = map(league_id, possibly(get_mfl_draft, otherwise = tibble()))) |>
   unnest(drafts)
 cli::cli_alert("Ending draft pull")
@@ -143,7 +145,7 @@ warnings <- dplyr::last_dplyr_warnings(n=20)
 
 
 if (nrow(mfl_drafts) <1) {
-  cli::cli_alert("MFL DRAFT FILE empty. Aborting")
+  cli::cli_alert("Drafts not started or data pull error. Exiting")
 
   write_csv(mfl_drafts,"draft_picks_mfl_bad_file.csv")
   pb_upload("draft_picks_mfl_bad_file.csv",
@@ -179,7 +181,7 @@ made_pick_count <- nrow(made_picks)
 
 
 
-
+# Write this before filtering to incude next picks for Power User
 write_csv(mfl_drafts,"draft_picks_mfl.csv")
 update_time <- format(Sys.time(), tz = "America/Toronto", usetz = TRUE)
 writeLines(update_time, "timestamp.txt")
@@ -218,7 +220,7 @@ cli::cli_alert_success("Moving on to ADP")
 
   all_picks <- mfl_drafts|>
     mutate(league_id = as.character(league_id))|>
-    filter(!(league_id %in% leagues_to_exclude))|>
+    filter(!(league_id %in% leagues_ids_to_exclude))|>
     filter(!is.na(timestamp))|>
     distinct()
 
@@ -388,6 +390,7 @@ write_csv(all_picks, "all_picks.csv")
            time_since_fmt = format(time_since, '%h')
     )|>
     arrange(last_pick_ts_est)
+
 
 
 
