@@ -102,23 +102,48 @@ mfl_draft_times <- mfl_draft_times |>
   mutate(start_time = as_datetime(as.numeric(start_time)))
          
 
+# Filter franchises down to a list with just franchises 1-3, then pivot wider
+multiples <- read_csv("https://github.com/mohanpatrick/elim-data-2025/releases/download/data-mfl/fc_multiple_leagues.csv")|>
+  mutate(league_id = as.character(league_id))
+
+
+
 
 # To summarize franchises
 # by league id (franchise 1 linked, total franchises, franchises linked, draft start)
 
+
+
 league_summary <- mfl_franchises |>
   group_by(league_name, league_id, league_home)|>
   summarise(
-            celeb_linked = max(ifelse(franchise_id == "0001" & !(is.na(username)),1,0)),
-            total_franchises = n(),
-            franchises_linked = sum(ifelse(!(is.na(username)),1,0))
+    celeb_1_linked = max(ifelse(franchise_id == "0001" & !(is.na(username)),1,0)),
+    celeb_2_linked = max(ifelse(franchise_id == "0002" & !(is.na(username)),1,0)),
+    celeb_3_linked = max(ifelse(franchise_id == "0003" & !(is.na(username)),1,0)),
+    franchise_1_email = max(ifelse(franchise_id == "0001" & !(is.na(email)),email,"")),
+    total_franchises = n(),
+    franchises_linked = sum(ifelse(!(is.na(username)),1,0))
   )|>
+  left_join(multiples |> select(league_id, celeb_count))|>
   left_join(mfl_draft_times|> select(league_id,type, start_time))|>
-  mutate(ready_to_go = ifelse(celeb_linked == 1 & franchises_linked > 1, "Yes", "No"),
-         days_until_draft = as.numeric(difftime(start_time, today(), units = "days"))
-         )|>
+ 
+      mutate(
+        celeb_count = ifelse(is.na(celeb_count),1,celeb_count),
+      ready_to_go = case_when(
+        celeb_count == 1 & franchises_linked > 1 ~ "Y",
+        celeb_count == 2 & celeb_1_linked + celeb_2_linked ==2 & franchises_linked > 2 ~ "Y",
+        celeb_count == 3 & celeb_1_linked + celeb_2_linked + celeb_3_linked==3 & franchises_linked > 2 ~ "Y",
+        .default = "N"
+        
+        
+      ),
+    days_until_draft = as.numeric(difftime(start_time, today(), units = "days"))
+  )|>
   arrange(desc(ready_to_go), desc(days_until_draft))
 
+# when celeb count is 1 and 2 franchises are linked then "Y"
+# when celeb count is 2 and franchises 1, 2  are linked  and franchises_linked gt 2 then then "Y"
+# hen celeb count is 2 and franchises 1, 2  are linked  and franchises_linked gt 2 then then "Y"
 
 write_csv(league_summary, "league_summary.csv")
 
