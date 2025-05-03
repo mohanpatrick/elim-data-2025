@@ -130,6 +130,13 @@ pb_upload("league_summary.csv",
 cli::cli_alert_success("Successfully uploaded to Git")
 
 
+update_time <- format(Sys.time(), tz = "America/Toronto", usetz = TRUE)
+writeLines(update_time, "timestamp.txt")
+
+pb_upload("timestamp.txt",
+          repo = "mohanpatrick/elim-data-2025",
+          tag = "data-mfl")
+cli::cli_alert_success("Successfully uploaded to Git")
 
 
 
