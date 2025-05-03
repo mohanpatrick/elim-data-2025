@@ -98,7 +98,7 @@ cli::cli_alert(now())
 
 
 mfl_draft_times <- mfl_draft_times |>
-  filter(type == "DRAFT_START")|>
+  filter(type %in% c( "DRAFT_START", "AUCTION_START", "WAIVER_BBID"))|>
   mutate(start_time = as_datetime(as.numeric(start_time)))
          
 
@@ -113,10 +113,11 @@ league_summary <- mfl_franchises |>
             total_franchises = n(),
             franchises_linked = sum(ifelse(!(is.na(username)),1,0))
   )|>
-  left_join(mfl_draft_times|> select(league_id, start_time))|>
-  mutate(ready_to_go = ifelse(celeb_linked == 1 & total_franchises > 1, "Yes", "No"),
+  left_join(mfl_draft_times|> select(league_id,type, start_time))|>
+  mutate(ready_to_go = ifelse(celeb_linked == 1 & franchises_linked > 1, "Yes", "No"),
          days_until_draft = as.numeric(difftime(start_time, today(), units = "days"))
-         )
+         )|>
+  arrange(desc(ready_to_go), desc(days_until_draft))
 
 
 write_csv(league_summary, "league_summary.csv")
