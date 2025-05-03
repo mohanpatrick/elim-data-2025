@@ -23,7 +23,7 @@ find_leagues = "TRUE"
 polite = "FALSE"
 search_string="zzz #FCEliminator"
 total_picks_in_draft = 288
-user ="COMMISH"
+user ="DEFAULT"
 
 #GITHUB_PAT <- Sys.getenv(c("GITHUB_PAT"))
 mfl_client <- Sys.getenv(c("MFL_CLIENT"))
