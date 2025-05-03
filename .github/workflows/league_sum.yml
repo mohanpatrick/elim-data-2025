@@ -7,7 +7,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
   
-name: update_drafts_mfl
+name: update_leagues_mfl
 
 jobs:
   adp_update_data:
