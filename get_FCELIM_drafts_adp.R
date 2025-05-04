@@ -224,7 +224,9 @@ cli::cli_alert_success("Moving on to ADP")
     filter(!is.na(timestamp))|>
     distinct()
 
-
+league_progress <- all_picks |>
+  group_by(league_id)|>
+  summarise(last_pick = max(overall))
 
   if(polite == "TRUE") {
     # Then we we need to look for completed and merge
@@ -311,7 +313,21 @@ write_csv(all_picks, "all_picks.csv")
   pb_upload("excluded_leagues.csv",
             repo = "mohanpatrick/elim-data-2025",
             tag = "data-mfl")
-  cli::cli_alert_success("Successfully adp uploaded to Git")
+  cli::cli_alert_success("Successfully uploaded excluded to Git")
+  
+  
+  write_csv(league_progress, "league_progress.csv")
+  
+  pb_upload("league_progress.csv",
+            repo = "mohanpatrick/elim-data-2025",
+            tag = "data-mfl")
+  cli::cli_alert_success("Successfully uploaded league progress to Git")
+  
+  
+  
+  
+  
+  
 
   pb_upload("adp_mfl.csv",
             repo = "mohanpatrick/elim-data-2025",
@@ -400,7 +416,7 @@ write_csv(all_league_summary, "otc_file.csv")
 pb_upload("otc_file.csv",
           repo = "mohanpatrick/elim-data-2025",
           tag = "data-mfl")
-cli::cli_alert_success("Successfully uploaded adp metadata to Git")
+cli::cli_alert_success("Successfully uploaded otc metadata to Git")
 
 #mfl_conn <- mfl_connect(season = 2024, league_id = 43231, user_name = mfl_user_id, password = mfl_pass , user_agent = mfl_client)
 #draft <- get_mfl_draft(43231)
