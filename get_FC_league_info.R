@@ -139,7 +139,7 @@ league_summary <- mfl_franchises |>
       ),
     days_until_draft = as.numeric(difftime(start_time, today(), units = "days"))
   )|>
-  arrange(desc(ready_to_go), desc(days_until_draft))
+  arrange(desc(ready_to_go), days_until_draft)
 
 # when celeb count is 1 and 2 franchises are linked then "Y"
 # when celeb count is 2 and franchises 1, 2  are linked  and franchises_linked gt 2 then then "Y"
