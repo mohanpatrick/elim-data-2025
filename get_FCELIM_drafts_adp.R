@@ -231,7 +231,7 @@ league_progress <- all_picks |>
   summarise(last_pick = max(overall))
 
 
-all_picks <- mfl_drafts|>
+all_picks <- all_picks|>
   filter(!(league_id %in% leagues_ids_to_exclude))
 
   if(polite == "TRUE") {
