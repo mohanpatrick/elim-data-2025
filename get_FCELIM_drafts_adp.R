@@ -70,8 +70,9 @@ mfl_leagues <- mfl_getendpoint(mfl_connect(search_draft_year),"leagueSearch", us
   purrr::pluck("content","leagues","league") |>
   tibble::tibble() |>
   tidyr::unnest_wider(1) |>
-  select( league_name = name, league_id = id,league_home = homeURL) 
-
+  select( league_name = name, league_id = id,league_home = homeURL) |>
+  mutate(league_home = str_replace(league_home, "https//", "https://"))
+#write_csv(mfl_leagues, "mfl_leagues.csv")
 
 leagues_to_exclude <- mfl_leagues |>
   filter(str_detect(toupper(league_name),"ROOKIES ONLY|NON SCORING|WITH TRADING|IDP ONLY|BBID|TEMPLATE|RBS ONLY"))
@@ -216,17 +217,22 @@ cli::cli_alert_success("Moving on to ADP")
   cli::cli_alert_success("{made_pick_count} picks found calculating ADP")
 
   # Then we we have some draft picks, but perhaps not many. ADP app will filter lt 5 currently
-  #Exclude weird leagues like rookie only
+  #Exclude weird leagues like rookie only. 
+  # Update filtering placement to allow us to get weird league pick count for other reasons
 
   all_picks <- mfl_drafts|>
     mutate(league_id = as.character(league_id))|>
-    filter(!(league_id %in% leagues_ids_to_exclude))|>
+    #filter(!(league_id %in% leagues_ids_to_exclude))|>
     filter(!is.na(timestamp))|>
     distinct()
 
 league_progress <- all_picks |>
   group_by(league_id)|>
   summarise(last_pick = max(overall))
+
+
+all_picks <- mfl_drafts|>
+  filter(!(league_id %in% leagues_ids_to_exclude))
 
   if(polite == "TRUE") {
     # Then we we need to look for completed and merge
