@@ -97,6 +97,12 @@ cli::cli_alert(now())
 
 
 
+league_progress <- read_csv("https://github.com/mohanpatrick/elim-data-2025/releases/download/data-mfl/league_progress.csv")|>
+  mutate(league_id = as.character(league_id))
+
+
+
+
 mfl_draft_times <- mfl_draft_times |>
   filter(type %in% c( "DRAFT_START", "AUCTION_START", "WAIVER_BBID"))|>
   mutate(start_time = as_datetime(as.numeric(start_time)))
@@ -144,6 +150,17 @@ league_summary <- mfl_franchises |>
 # when celeb count is 1 and 2 franchises are linked then "Y"
 # when celeb count is 2 and franchises 1, 2  are linked  and franchises_linked gt 2 then then "Y"
 # hen celeb count is 2 and franchises 1, 2  are linked  and franchises_linked gt 2 then then "Y"
+
+
+league_summary <- league_summary |>
+  left_join(league_progress)|>
+  filter(is.na(last_pick))
+
+
+
+
+
+
 
 write_csv(league_summary, "league_summary.csv")
 
