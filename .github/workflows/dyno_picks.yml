@@ -27,5 +27,5 @@ jobs:
           packages: ffscrapr, data.table, stringr, lubridate, piggyback, readr, dplyr, tidyr, tidyverse, purrr, cli, lubridate
         name: Run data update
       - run: |
-          source("get_FCELIM_drafts_adp.R")
+          source("mfl_all_dyno_picks.R")
         shell: Rscript {0}
