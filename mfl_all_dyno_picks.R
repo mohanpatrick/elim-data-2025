@@ -51,7 +51,7 @@ if(find_leagues == "TRUE") {
 
 get_draft <- function(league_id){
   cli::cli_alert("League ID: {league_id}")
-  Sys.sleep(1)
+  Sys.sleep(3)
   conn <- mfl_connect(search_draft_year, league_id, user_agent = mfl_client, user_name=mfl_user_id, password = mfl_pass, rate_limit = TRUE, rate_limit_number = 30, rate_limit_seconds = 60)
   ff_draft(conn)
 }
