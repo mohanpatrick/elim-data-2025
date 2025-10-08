@@ -276,11 +276,4 @@ pb_upload("leaderboard.csv",repo = "mohanpatrick/elim-data-2024",tag = "data-mfl
 pb_upload("leaderboard_alive.csv",repo = "mohanpatrick/elim-data-2024",tag = "data-mfl")
 cli::cli_alert_success("Successfully draft picks uploaded to Git")
 
-all_results_ordered |>
-  filter(is.na(franchise_name ))
-
-test <- get_results_full("59150")
-
-test <- all_results_ordered |>
-  filter(league_id == 29867)
 
