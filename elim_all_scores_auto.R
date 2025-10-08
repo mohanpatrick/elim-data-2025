@@ -8,10 +8,7 @@ library(stringr)
 library(piggyback)
 library(cli)
 library(readr)
-library(ggrepel)
-library(jsonlite)
-library(gt)
-library(gtExtras)
+
 
 
 options(dplyr.summarise.inform = FALSE,
