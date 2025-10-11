@@ -147,10 +147,6 @@ all_results <- elim_leagues |>
 # and filter out teams with none
 
 
-all_results |> group_by(results_week)|>
-
-  summarise(total = sum(as.numeric(results_score)))
-
 
 #41474 still throwing an error 44072
 
@@ -162,13 +158,10 @@ all_results |> group_by(results_week)|>
 #Error: Can't select columns that don't exist.
 #✖ Column `score` doesn't exist.
 
-current_week <- all_results |> group_by(results_week)|>
-  filter(!(is.na(results_score)))|>
-  summarise(total = sum(as.numeric(results_score)))|>
-  select(results_week)|>
-  arrange(desc(results_week))|>
-  slice_head(n=1)
-
+current_week <- all_results |>
+  filter(!is.na(results_score)) |>
+  summarise(max_week = max(results_week, na.rm = TRUE)) |>
+  pull(max_week)
 
 #current_week <- 5
 
@@ -213,6 +206,8 @@ all_results_ordered <- all_results|>
     
   )|>
   distinct()
+
+
 
 # Enrich with low score
 all_results_ordered <- all_results_ordered |>
@@ -259,8 +254,6 @@ leaderboard_alive <- leader_names |>
   count()|>
   arrange(desc(n))
 
-leader_names |>
-  filter(is.na(franchise_name))
 
 
 # Objects n
