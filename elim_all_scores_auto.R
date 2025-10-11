@@ -127,7 +127,8 @@ get_results_full <- function(league_id){
 
 
 # Read all leagues from draft file created this summer
-elim_leagues <- read_csv("https://github.com/mohanpatrick/elim-data-2025/releases/download/data-mfl/mfl_league_ids.csv")
+elim_leagues <- read_csv("https://github.com/mohanpatrick/elim-data-2025/releases/download/data-mfl/mfl_league_ids.csv")|>
+  filter(!league_id %in% c("59150", "46397"))
 
 
 # Pass in league ids to results function and iterate over it
