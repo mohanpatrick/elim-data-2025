@@ -17,7 +17,7 @@ mfl_client <- Sys.getenv(c("MFL_CLIENT"))
 mfl_user_id <- Sys.getenv(c("MFL_USER_ID"))
 mfl_pass <- Sys.getenv(c("MFL_PWD"))
 
-
+search_draft_year = "2025"
 
 
 
@@ -48,9 +48,7 @@ get_franchises <- function(league_id){
   cli::cli_alert("Now sleeping for 2 seconds")
   Sys.sleep(3)
   
-  mfl_user_id = "android16"
-  mfl_pass = "R1BRX70x"
-  search_draft_year = "2025"
+  
   
   mfl_conn <- mfl_connect(search_draft_year, user_agent = "MFLRCLIENT", user_name=mfl_user_id, password = mfl_pass, rate_limit = TRUE, rate_limit_number = 30, rate_limit_seconds = 60, league_id = league_id)
   
@@ -68,9 +66,7 @@ get_results <- function(league_id){
   cli::cli_alert("Now sleeping for 2 seconds")
   Sys.sleep(3)
   
-  mfl_user_id = "android16"
-  mfl_pass = "R1BRX70x"
-  search_draft_year = "2025"
+ 
   
   mfl_conn <- mfl_connect(search_draft_year, user_agent = "MFLRCLIENT", user_name=mfl_user_id, password = mfl_pass, rate_limit = TRUE, rate_limit_number = 30, rate_limit_seconds = 60, league_id = league_id)
   
@@ -97,9 +93,7 @@ get_results_full <- function(league_id){
   cli::cli_alert("Now sleeping for 2 seconds")
   Sys.sleep(3)
   
-  mfl_user_id = "android16"
-  mfl_pass = "R1BRX70x"
-  search_draft_year = "2025"
+
   
   mfl_conn <- mfl_connect(search_draft_year, user_agent = "MFLRCLIENT", user_name=mfl_user_id, password = mfl_pass, rate_limit = TRUE, rate_limit_number = 30, rate_limit_seconds = 60, league_id = league_id)
   
@@ -123,7 +117,14 @@ get_results_full <- function(league_id){
 
 
 
+#all_results <-get_results_full("29255")
 
+#current_week <- all_results |>
+#  mutate(score = as.numeric((score)))|>
+#  mutate(week = as.numeric(week))|>
+#  filter(!is.na(score)) |>
+#  summarise(max_week = max(week, na.rm = TRUE)) |>
+#  pull(max_week)
 
 
 # Read all leagues from draft file created this summer
@@ -159,6 +160,8 @@ all_results <- elim_leagues |>
 #✖ Column `score` doesn't exist.
 
 current_week <- all_results |>
+  mutate(results_score = as.numeric((results_score)))|>
+  mutate(results_week = as.numeric(results_week))|>
   filter(!is.na(results_score)) |>
   summarise(max_week = max(results_week, na.rm = TRUE)) |>
   pull(max_week)
@@ -253,6 +256,10 @@ leaderboard_alive <- leader_names |>
   group_by(franchise_name)|>
   count()|>
   arrange(desc(n))
+
+
+
+
 
 
 
