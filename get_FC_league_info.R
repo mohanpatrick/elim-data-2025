@@ -30,6 +30,7 @@ mfl_client <- Sys.getenv(c("MFL_CLIENT"))
 mfl_user_id <- Sys.getenv(c("MFL_USER_ID"))
 mfl_pass <- Sys.getenv(c("MFL_PWD"))
 
+VALID_EMAIL_REGEX <- "^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$"
 
 
 cli::cli_alert_success("Running under {user}")
@@ -37,7 +38,7 @@ cli::cli_alert_success("Running under {user}")
 
 if ( user == "COMMISH") {
   
-  
+ 
   
   #GITHUB_PAT <- Sys.getenv(c("GITHUB_PAT"))
   mfl_client <- Sys.getenv(c("COMMISH_CLIENT"))
@@ -47,19 +48,28 @@ if ( user == "COMMISH") {
   
 }
 
+
+
+#conn <- mfl_connect(search_draft_year, "11104", user_agent = mfl_client, rate_limit = TRUE, rate_limit_number = 30, rate_limit_seconds = 60,user_name=mfl_user_id, password = mfl_pass)
+
+
+
 mfl_leagues <- mfl_getendpoint(mfl_connect(search_draft_year),"leagueSearch", user_agent=mfl_client, SEARCH=search_string, user_name=mfl_user_id, password = mfl_pass) |>
   purrr::pluck("content","leagues","league") |>
   tibble::tibble() |>
   tidyr::unnest_wider(1) |>
   select( league_name = name, league_id = id,league_home = homeURL) 
 
-
+mfl_leagues <- mfl_leagues|>slice_sample(n=10)
 
 get_mfl_franchises <- function(league_id){
   cli::cli_alert("League ID: {league_id}")
   cli::cli_alert("Now we sleep to not piss off MFL")
-  Sys.sleep(2)
-  conn <- mfl_connect(search_draft_year, league_id, user_agent = mfl_client, rate_limit = TRUE, rate_limit_number = 30, rate_limit_seconds = 60,user_name=mfl_user_id, password = mfl_pass)
+  Sys.sleep(3)
+  conn <- mfl_connect(search_draft_year, league_id, user_agent = mfl_client, rate_limit = TRUE, rate_limit_number = 30, rate_limit_seconds = 60,user_name=mfl_user_id, 
+  password = mfl_pass)
+  cookie_value <- conn$auth_cookie$options$cookie
+  cli::cli_alert("{cookie_value}")
   franchises<- ff_franchises(conn)
   
     
@@ -83,7 +93,8 @@ cli::cli_alert("Starting franchises pull")
 cli::cli_alert(now())
 mfl_franchises <- mfl_leagues |>
   mutate(franchises = map(league_id, possibly(get_mfl_franchises, otherwise = tibble()))) |>
-  unnest(franchises)
+  unnest(franchises)|>
+  mutate(league_home = str_replace(league_home, "https//", "https://"))
 cli::cli_alert("Ending franchise pull")
 cli::cli_alert(now())
 
@@ -95,6 +106,30 @@ mfl_draft_times <- mfl_leagues |>
 cli::cli_alert("Ending drafts pull")
 cli::cli_alert(now())
 
+# ── Email validation flag ──────────────────────────────────────────────────────
+# Regex covers the most common structural failures without being overly strict.
+# Flagged rows should be reviewed manually — this catches obvious invalids only.
+
+
+# Quick summary to paste into your console during prep
+
+mfl_franchise_list <- mfl_franchises |>
+  select(league_name,league_id, league_home, franchise_id, franchise_name, email)|>
+  mutate(league_home = str_replace(league_home, "https//", "https://"))|>
+  mutate(
+    email_flag = case_when(
+      is.na(email) | str_trim(email) == ""
+      ~ "missing",
+      !str_detect(str_trim(email), VALID_EMAIL_REGEX)
+      ~ "invalid_format",
+      str_detect(str_trim(email), "\\s")
+      ~ "contains_spaces",
+      str_length(email) > 254
+      ~ "too_long",
+      TRUE                              ~ "ok"
+    )
+  )|>
+  mutate( email = "**************")
 
 
 league_progress <- read_csv("https://github.com/mohanpatrick/elim-data-2025/releases/download/data-mfl/league_progress.csv")|>
@@ -119,7 +154,8 @@ multiples <- read_csv("https://github.com/mohanpatrick/elim-data-2025/releases/d
 # by league id (franchise 1 linked, total franchises, franchises linked, draft start)
 
 
-
+mfl_franchises <- mfl_franchises |>
+  mutate (email= "**************")
 league_summary <- mfl_franchises |>
   group_by(league_name, league_id, league_home)|>
   summarise(
@@ -145,7 +181,15 @@ league_summary <- mfl_franchises |>
       ),
     days_until_draft = as.numeric(difftime(start_time, today(), units = "days"))
   )|>
-  arrange(desc(ready_to_go), days_until_draft)
+  arrange(desc(ready_to_go), days_until_draft) 
+
+email_sum <- mfl_franchise_list |>
+  group_by(league_id)|>
+  summarise(suspect_emails = sum(ifelse(email_flag != "ok",1,0)))
+
+
+league_summary <- league_summary |>
+  left_join(email_sum, by=c("league_id" = "league_id"))
 
 # when celeb count is 1 and 2 franchises are linked then "Y"
 # when celeb count is 2 and franchises 1, 2  are linked  and franchises_linked gt 2 then then "Y"
@@ -157,9 +201,13 @@ league_summary <- league_summary |>
   filter(is.na(last_pick))
 
 
+write_csv(mfl_franchise_list, "franchise_list.csv")
 
 
-
+pb_upload("franchise_list.csv",
+          repo = "mohanpatrick/elim-data-2025",
+          tag = "data-mfl")
+cli::cli_alert_success("Successfully uploaded to Git")
 
 
 write_csv(league_summary, "league_summary.csv")
