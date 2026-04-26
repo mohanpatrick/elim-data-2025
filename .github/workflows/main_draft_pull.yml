@@ -1,0 +1,30 @@
+on:
+  schedule:
+     - cron: "20,50 * * * *"
+  workflow_dispatch:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+  
+name: get_drafts_mfl
+jobs:
+  adp_update_data:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.REPO_PAT }}
+      MFL_CLIENT: ${{ secrets.MFL_CLIENT }}
+      MFL_USER_ID: ${{ secrets.MFL_USER_ID }}
+      MFL_PWD: ${{ secrets.MFL_PWD }}
+      MFL_COMMISH_USER_ID: ${{ secrets.MFL_COMMISH_USER_ID }}
+      COMMISH_CLIENT: ${{ secrets.COMMISH_CLIENT }}
+      COMMISH_PWD: ${{ secrets.COMMISH_PWD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: r-lib/actions/setup-r@v2
+      - name: Run data update
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: ffscrapr, data.table, stringr, lubridate, piggyback, readr, dplyr, tidyr, purrr, cli
+      - run: |
+          source("mfl_draft_pull.R")
+        shell: Rscript {0}
