@@ -18,7 +18,7 @@ options(dplyr.summarise.inform = FALSE,
 #GITHUB_PAT <- Sys.setenv("GITHUB_PAT")
 #Sys.setenv(MFL_CLIENT = "")
 
-search_draft_year = "2025"
+search_draft_year = "2026"
 find_leagues = "TRUE"
 polite = "FALSE"
 search_string="zzz #FCEliminator"
@@ -60,7 +60,7 @@ mfl_leagues <- mfl_getendpoint(mfl_connect(search_draft_year),"leagueSearch", us
   tidyr::unnest_wider(1) |>
   select( league_name = name, league_id = id,league_home = homeURL) 
 
-mfl_leagues <- mfl_leagues|>slice_sample(n=10)
+#mfl_leagues <- mfl_leagues|>slice_sample(n=10)
 
 get_mfl_franchises <- function(league_id){
   cli::cli_alert("League ID: {league_id}")
@@ -81,6 +81,8 @@ get_mfl_draft_starts <- function(league_id){
   cli::cli_alert("Now we sleep to not piss off MFL")
   Sys.sleep(2)
   conn <- mfl_connect(search_draft_year, league_id, user_agent = mfl_client, rate_limit = TRUE, rate_limit_number = 30, rate_limit_seconds = 60,user_name=mfl_user_id, password = mfl_pass)
+  cookie_value <- conn$auth_cookie$options$cookie
+  cli::cli_alert("{cookie_value}")
   calendar <-  mfl_getendpoint(conn,endpoint = "calendar", W="YTD")|>
     
     purrr::pluck("content","calendar") |>
@@ -88,6 +90,20 @@ get_mfl_draft_starts <- function(league_id){
     tidyr::unnest_wider(1)
 }
   
+
+obscure_email <- function(email) {
+  parts <- strsplit(email, "@")[[1]]
+  local <- parts[1]
+  domain <- parts[2]
+  
+  visible_chars <- max(1, floor(nchar(local) * 0.3))
+  obscured_local <- paste0(
+    substr(local, 1, visible_chars),
+    strrep("*", nchar(local) - visible_chars)
+  )
+  
+  paste0(obscured_local, "@", domain)
+}
 
 cli::cli_alert("Starting franchises pull")
 cli::cli_alert(now())
@@ -128,8 +144,7 @@ mfl_franchise_list <- mfl_franchises |>
       ~ "too_long",
       TRUE                              ~ "ok"
     )
-  )|>
-  mutate( email = "**************")
+  )
 
 
 league_progress <- read_csv("https://github.com/mohanpatrick/elim-data-2025/releases/download/data-mfl/league_progress.csv")|>
@@ -154,8 +169,7 @@ multiples <- read_csv("https://github.com/mohanpatrick/elim-data-2025/releases/d
 # by league id (franchise 1 linked, total franchises, franchises linked, draft start)
 
 
-mfl_franchises <- mfl_franchises |>
-  mutate (email= "**************")
+
 league_summary <- mfl_franchises |>
   group_by(league_name, league_id, league_home)|>
   summarise(
@@ -164,7 +178,7 @@ league_summary <- mfl_franchises |>
     celeb_3_linked = max(ifelse(franchise_id == "0003" & !(is.na(username)),1,0)),
     franchise_1_email = max(ifelse(franchise_id == "0001" & !(is.na(email)),email,"")),
     total_franchises = n(),
-    franchises_linked = sum(ifelse(!(is.na(username)),1,0))
+    franchises_linked = sum(!is.na(username) & trimws(username) != "")
   )|>
   left_join(multiples |> select(league_id, celeb_count))|>
   left_join(mfl_draft_times|> select(league_id,type, start_time))|>
@@ -179,7 +193,7 @@ league_summary <- mfl_franchises |>
         
         
       ),
-    days_until_draft = as.numeric(difftime(start_time, today(), units = "days"))
+      days_until_draft = round(as.numeric(difftime(start_time, today(), units = "days")), 2)
   )|>
   arrange(desc(ready_to_go), days_until_draft) 
 
@@ -200,6 +214,22 @@ league_summary <- league_summary |>
   left_join(league_progress)|>
   filter(is.na(last_pick))
 
+
+#cleanup emails
+
+mfl_franchise_list <- mfl_franchise_list|>
+  mutate(email = if_else(
+    !is.na(email),
+    map_chr(email, obscure_email),
+    NA_character_
+  ))
+
+league_summary <- league_summary|>
+  mutate(franchise_1_email = if_else(
+    !is.na(franchise_1_email),
+    map_chr(franchise_1_email, obscure_email),
+    NA_character_
+  ))
 
 write_csv(mfl_franchise_list, "franchise_list.csv")
 
