@@ -1,6 +1,6 @@
 on:
   schedule:
-     - cron: "50 3 * * *"
+     - cron: "50 * * * *"
   workflow_dispatch:
 
 concurrency:
