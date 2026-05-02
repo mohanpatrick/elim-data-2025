@@ -60,7 +60,7 @@ mfl_leagues <- mfl_getendpoint(mfl_connect(search_draft_year),"leagueSearch", us
   tidyr::unnest_wider(1) |>
   select( league_name = name, league_id = id,league_home = homeURL) 
 
-#mfl_leagues <- mfl_leagues|>slice_sample(n=10)
+mfl_leagues <- mfl_leagues|>slice_sample(n=10)
 
 get_mfl_franchises <- function(league_id){
   cli::cli_alert("League ID: {league_id}")
@@ -110,7 +110,10 @@ cli::cli_alert(now())
 mfl_franchises <- mfl_leagues |>
   mutate(franchises = map(league_id, possibly(get_mfl_franchises, otherwise = tibble()))) |>
   unnest(franchises)|>
-  mutate(league_home = str_replace(league_home, "https//", "https://"))
+  mutate(
+      league_home = str_replace(league_home, "https//", "https://"),
+     is_linked =ifelse(!is.na(username) & trimws(username) != "",1,0)
+      )
 cli::cli_alert("Ending franchise pull")
 cli::cli_alert(now())
 
@@ -130,7 +133,7 @@ cli::cli_alert(now())
 # Quick summary to paste into your console during prep
 
 mfl_franchise_list <- mfl_franchises |>
-  select(league_name,league_id, league_home, franchise_id, franchise_name, email)|>
+  select(league_name,league_id, league_home, franchise_id, franchise_name, email, is_linked)|>
   mutate(league_home = str_replace(league_home, "https//", "https://"))|>
   mutate(
     email_flag = case_when(
