@@ -60,7 +60,7 @@ mfl_leagues <- mfl_getendpoint(mfl_connect(search_draft_year),"leagueSearch", us
   tidyr::unnest_wider(1) |>
   select( league_name = name, league_id = id,league_home = homeURL) 
 
-mfl_leagues <- mfl_leagues|>slice_sample(n=10)
+#mfl_leagues <- mfl_leagues|>slice_sample(n=10)
 
 get_mfl_franchises <- function(league_id){
   cli::cli_alert("League ID: {league_id}")
