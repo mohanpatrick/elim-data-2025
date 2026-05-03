@@ -65,7 +65,7 @@ mfl_leagues <- mfl_getendpoint(mfl_connect(search_draft_year),"leagueSearch", us
 get_mfl_franchises <- function(league_id){
   cli::cli_alert("League ID: {league_id}")
   cli::cli_alert("Now we sleep to not piss off MFL")
-  Sys.sleep(3)
+  Sys.sleep(2)
   conn <- mfl_connect(search_draft_year, league_id, user_agent = mfl_client, rate_limit = TRUE, rate_limit_number = 30, rate_limit_seconds = 60,user_name=mfl_user_id, 
   password = mfl_pass)
   cookie_value <- conn$auth_cookie$options$cookie
@@ -176,9 +176,9 @@ multiples <- read_csv("https://github.com/mohanpatrick/elim-data-2025/releases/d
 league_summary <- mfl_franchises |>
   group_by(league_name, league_id, league_home)|>
   summarise(
-    celeb_1_linked = max(ifelse(franchise_id == "0001" & !(is.na(username)),1,0)),
-    celeb_2_linked = max(ifelse(franchise_id == "0002" & !(is.na(username)),1,0)),
-    celeb_3_linked = max(ifelse(franchise_id == "0003" & !(is.na(username)),1,0)),
+    celeb_1_linked = max(ifelse(franchise_id == "0001" & !is.na(username) & trimws(username) != "",1,0)),
+    celeb_2_linked = max(ifelse(franchise_id == "0002" & !is.na(username) & trimws(username) != "",1,0)),
+    celeb_3_linked = max(ifelse(franchise_id == "0003" & !is.na(username) & trimws(username) != "",1,0)),
     franchise_1_email = max(ifelse(franchise_id == "0001" & !(is.na(email)),email,"")),
     total_franchises = n(),
     franchises_linked = sum(!is.na(username) & trimws(username) != "")
