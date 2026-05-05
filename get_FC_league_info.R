@@ -188,6 +188,8 @@ league_summary <- mfl_franchises |>
  
       mutate(
         celeb_count = ifelse(is.na(celeb_count),1,celeb_count),
+        celeb_2_linked = ifelse(celeb_count >1,celeb_2_linked,NA),
+        celeb_3_linked = ifelse(celeb_count >2,celeb_3_linked,NA),
       ready_to_go = case_when(
         celeb_count == 1 & celeb_1_linked ==1 & franchises_linked > 1 ~ "Y",
         celeb_count == 2 & celeb_1_linked + celeb_2_linked ==2 & franchises_linked > 2 ~ "Y",
