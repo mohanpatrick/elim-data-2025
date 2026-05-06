@@ -193,7 +193,7 @@ league_summary <- mfl_franchises |>
       ready_to_go = case_when(
         celeb_count == 1 & celeb_1_linked ==1 & franchises_linked > 1 ~ "Y",
         celeb_count == 2 & celeb_1_linked + celeb_2_linked ==2 & franchises_linked > 2 ~ "Y",
-        celeb_count == 3 & celeb_1_linked + celeb_2_linked + celeb_3_linked==3 & franchises_linked > 2 ~ "Y",
+        celeb_count == 3 & celeb_1_linked + celeb_2_linked + celeb_3_linked==3 & franchises_linked > 3 ~ "Y",
         .default = "N"
         
         
@@ -242,7 +242,7 @@ write_csv(mfl_franchise_list, "franchise_list.csv")
 pb_upload("franchise_list.csv",
           repo = "mohanpatrick/elim-data-2025",
           tag = "data-mfl")
-cli::cli_alert_success("Successfully uploaded to Git")
+cli::cli_alert_success("Successfully uploaded franchises to Git")
 
 
 write_csv(league_summary, "league_summary.csv")
@@ -252,7 +252,7 @@ write_csv(league_summary, "league_summary.csv")
 pb_upload("league_summary.csv",
           repo = "mohanpatrick/elim-data-2025",
           tag = "data-mfl")
-cli::cli_alert_success("Successfully uploaded to Git")
+cli::cli_alert_success("Successfully uploaded league summary to Git")
 
 
 update_time <- format(Sys.time(), tz = "America/Toronto", usetz = TRUE)
