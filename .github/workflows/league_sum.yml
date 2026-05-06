@@ -24,6 +24,7 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           packages: ffscrapr, dplyr, data.table, tidyr, purrr, stringr, piggyback, cli, readr, lubridate, tibble
+          cache: true
       - name: Run data update
         run: |
           source("get_FC_league_info.R")
