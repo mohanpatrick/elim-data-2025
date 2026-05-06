@@ -25,6 +25,7 @@ jobs:
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           packages: ffscrapr, data.table, stringr, lubridate, piggyback, readr, dplyr, tidyr, purrr, cli
+          cache: true
       - run: |
           source("mfl_draft_pull.R")
         shell: Rscript {0}
