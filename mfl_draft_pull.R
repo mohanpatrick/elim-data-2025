@@ -18,7 +18,7 @@ options(dplyr.summarise.inform = FALSE,
 #GITHUB_PAT <- Sys.setenv("GITHUB_PAT")
 #Sys.setenv(MFL_CLIENT = "")
 
-search_draft_year = "2025"
+search_draft_year = "2026"
 find_leagues = "TRUE"
 polite = "FALSE"
 search_string="zzz #FCEliminator"
@@ -143,8 +143,8 @@ fwrite(mfl_leagues,"mfl_league_ids.csv",quote = TRUE)
 
 # FOR TESTING
 
-mfl_leagues <- mfl_leagues |>
- slice_sample(n=50)
+#mfl_leagues <- mfl_leagues |>
+# slice_sample(n=50)
 
 cli::cli_alert("Starting draft pull")
 cli::cli_alert(now())
