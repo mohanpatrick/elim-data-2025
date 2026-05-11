@@ -216,8 +216,7 @@ league_summary <- league_summary |>
 
 
 league_summary <- league_summary |>
-  left_join(league_progress)|>
-  filter(is.na(last_pick))
+  left_join(league_progress)
 
 
 #cleanup emails
