@@ -68,8 +68,8 @@ get_mfl_franchises <- function(league_id){
   Sys.sleep(2)
   conn <- mfl_connect(search_draft_year, league_id, user_agent = mfl_client, rate_limit = TRUE, rate_limit_number = 30, rate_limit_seconds = 60,user_name=mfl_user_id, 
   password = mfl_pass)
-  cookie_value <- conn$auth_cookie$options$cookie
-  cli::cli_alert("{cookie_value}")
+   cookie_value <- substr(conn$auth_cookie$options$cookie, 1, 11)
+      cli::cli_alert("{cookie_value}")
   franchises<- ff_franchises(conn)
   
     
@@ -81,8 +81,8 @@ get_mfl_draft_starts <- function(league_id){
   cli::cli_alert("Now we sleep to not piss off MFL")
   Sys.sleep(2)
   conn <- mfl_connect(search_draft_year, league_id, user_agent = mfl_client, rate_limit = TRUE, rate_limit_number = 30, rate_limit_seconds = 60,user_name=mfl_user_id, password = mfl_pass)
-  cookie_value <- conn$auth_cookie$options$cookie
-  cli::cli_alert("{cookie_value}")
+   cookie_value <- substr(conn$auth_cookie$options$cookie, 1, 11)
+      cli::cli_alert("{cookie_value}")
   calendar <-  mfl_getendpoint(conn,endpoint = "calendar", W="YTD")|>
     
     purrr::pluck("content","calendar") |>
