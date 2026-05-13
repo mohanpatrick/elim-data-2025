@@ -97,7 +97,7 @@ get_mfl_draft <- function(league_id) {
                           rate_limit = TRUE, rate_limit_number = 30,
                           rate_limit_seconds = 60, user_name = mfl_user_id,
                           password = mfl_pass)
-      cookie_value <- conn$auth_cookie$options$cookie
+      cookie_value <- substr(conn$auth_cookie$options$cookie, 1, 11)
       cli::cli_alert("{cookie_value}")
       draft <- ff_draft(conn)
       if ("timestamp" %in% names(draft)) return(draft)
@@ -144,7 +144,7 @@ fwrite(mfl_leagues,"mfl_league_ids.csv",quote = TRUE)
 # FOR TESTING
 
 #mfl_leagues <- mfl_leagues |>
-# slice_sample(n=50)
+# slice_sample(n=10)
 
 cli::cli_alert("Starting draft pull")
 cli::cli_alert(now())
