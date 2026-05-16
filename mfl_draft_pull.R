@@ -234,6 +234,15 @@ league_progress <- all_picks |>
   group_by(league_id)|>
   summarise(last_pick = max(overall))
 
+# Add version with URL for the OTC scraper
+
+
+league_progress_url <- all_picks |>
+  group_by(league_id,league_name,league_home)|>
+  summarise(last_pick = max(overall))
+
+
+
 
 all_picks <- all_picks|>
   filter(!(league_id %in% leagues_ids_to_exclude))
@@ -332,6 +341,15 @@ write_csv(all_picks, "all_picks.csv")
             repo = "mohanpatrick/elim-data-2025",
             tag = "data-mfl")
   cli::cli_alert_success("Successfully uploaded league progress to Git")
+  
+  
+  write_csv(league_progress_url, "league_progress_url.csv")
+  
+  pb_upload("league_progress_url.csv",
+            repo = "mohanpatrick/elim-data-2025",
+            tag = "data-mfl")
+  cli::cli_alert_success("Successfully uploaded league progress with URL to Git")
+  
   
   
 
