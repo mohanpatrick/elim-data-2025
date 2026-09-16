@@ -125,7 +125,7 @@ elim_leagues <- read_csv("https://github.com/mohanpatrick/elim-data-2025/release
 # Pass in league ids to results function and iterate over it
 
 #elim_leagues <- elim_leagues|>
-#  slice_head(n=10)
+# slice_head(n=10)
 
 all_results <- elim_leagues |>
   mutate(results = map(league_id, possibly(get_results_full, otherwise = tibble(), quiet=FALSE))) |>
@@ -150,6 +150,7 @@ all_results <- elim_leagues |>
 #✖ Column `score` doesn't exist.
 
 current_week <- all_results |>
+  filter(!is.na(results_score)) |>
   mutate(results_score = as.numeric((results_score)))|>
   mutate(results_week = as.numeric(results_week))|>
   filter(!is.na(results_score)) |>
