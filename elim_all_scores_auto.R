@@ -13,11 +13,11 @@ library(readr)
 
 options(dplyr.summarise.inform = FALSE,
 piggyback.verbose = FALSE)
-mfl_client <- Sys.getenv(c("MFL_CLIENT"))
-mfl_user_id <- Sys.getenv(c("MFL_USER_ID"))
-mfl_pass <- Sys.getenv(c("MFL_PWD"))
+mfl_client <- Sys.getenv(c("COMMISH_CLIENT "))
+mfl_user_id <- Sys.getenv(c("MFL_COMMISH_USER_ID"))
+mfl_pass <- Sys.getenv(c("MFL_COMMISH_PWD"))
 
-search_draft_year = "2025"
+search_draft_year = "2026"
 
 
 
@@ -30,17 +30,7 @@ GITHUB_PAT <- Sys.getenv(c("GITHUB_PAT"))
 
 cli::cli_alert("Client ID: {mfl_client}")
 
-# Get franchise info for missing leagues
-franchise_list <- tribble(
-  ~league_id, 
-  "33121", 
-  "39863", 
-  "59150",
-  "65052",
-  "15472",
-  "10144",
-  "57215"
-)
+
 
 
 get_franchises <- function(league_id){
@@ -50,7 +40,7 @@ get_franchises <- function(league_id){
   
   
   
-  mfl_conn <- mfl_connect(search_draft_year, user_agent = "MFLRCLIENT", user_name=mfl_user_id, password = mfl_pass, rate_limit = TRUE, rate_limit_number = 30, rate_limit_seconds = 60, league_id = league_id)
+  mfl_conn <- mfl_connect(search_draft_year, user_agent = mfl_client, user_name=mfl_user_id, password = mfl_pass, rate_limit = TRUE, rate_limit_number = 30, rate_limit_seconds = 60, league_id = league_id)
   
   franchises <-   ff_franchises(mfl_conn)
   
