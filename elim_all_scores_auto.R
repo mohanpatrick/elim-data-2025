@@ -13,7 +13,7 @@ library(readr)
 
 options(dplyr.summarise.inform = FALSE,
 piggyback.verbose = FALSE)
-mfl_client <- Sys.getenv(c("COMMISH_CLIENT "))
+mfl_client <- Sys.getenv(c("COMMISH_CLIENT"))
 mfl_user_id <- Sys.getenv(c("MFL_COMMISH_USER_ID"))
 mfl_pass <- Sys.getenv(c("MFL_COMMISH_PWD"))
 
@@ -79,7 +79,8 @@ get_results <- function(league_id){
 
 
 get_results_full <- function(league_id){
-  cli::cli_alert("League ID: {league_id}")
+  cli::cli_alert("Getting results for League ID: {league_id}")
+
   cli::cli_alert("Now sleeping for 2 seconds")
   Sys.sleep(3)
   
