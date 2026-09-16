@@ -15,7 +15,7 @@ options(dplyr.summarise.inform = FALSE,
 piggyback.verbose = FALSE)
 mfl_client <- Sys.getenv(c("COMMISH_CLIENT"))
 mfl_user_id <- Sys.getenv(c("MFL_COMMISH_USER_ID"))
-mfl_pass <- Sys.getenv(c("MFL_COMMISH_PWD"))
+mfl_pass <- Sys.getenv(c("COMMISH_PWD"))
 
 search_draft_year = "2026"
 
